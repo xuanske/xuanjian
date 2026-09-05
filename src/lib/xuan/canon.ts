@@ -143,11 +143,14 @@ function pickStemVerse(chart: Chart): Passage {
   const season = seasonOf(chart.month.branch);
   const stem = chart.dayMaster;
   const verse = STEM_SEASON[stem]?.[season] ?? STEM_SEASON.甲![season];
+  const authentic = stem === "甲" || stem === "乙";
   return {
-    source: "三命通会",
-    heading: "三命通会",
+    source: authentic ? "三命通会" : "三命通会·用神例",
+    heading: authentic ? "三命通会" : "月令用神",
     verse,
-    note: `日主${stem}，月令${chart.month.branch}属${season}。口诀只论月令喜忌，不作一年运程，更不指定应期。`,
+    note: authentic
+      ? `日主${stem}，月令${chart.month.branch}属${season}。口诀录自万民英《三命通会》论甲乙，只论月令喜忌，不指定应期。`
+      : `日主${stem}，月令${chart.month.branch}属${season}。此条依《三命通会》调候用神之例撰写，便于对照，不是逐字原文。`,
   };
 }
 
