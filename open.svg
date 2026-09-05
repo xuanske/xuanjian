@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 750 1200">
+  <rect width="750" height="1200" fill="#0b0c0d"/>
+  <rect x="40" y="40" width="670" height="1120" fill="none" stroke="#2a2c30"/>
+  <image x="80" y="80" width="590" height="310" preserveAspectRatio="xMidYMid slice" href="public/og.jpg"/>
+  <text x="80" y="470" font-family="Songti SC, STSong, serif" font-size="64" fill="#c8ccd4">玄鉴</text>
+  <text x="80" y="518" font-family="Songti SC, STSong, serif" font-size="22" fill="#7c8088">命理参考 · 不是宿命</text>
+  <text x="80" y="600" font-family="Songti SC, STSong, serif" font-size="26" fill="#c8ccd4">先在本地排盘、摇卦，再请辞章。</text>
+  <text x="80" y="642" font-family="Songti SC, STSong, serif" font-size="26" fill="#c8ccd4">不保证发财婚姻，不编精确应期。</text>
+  <text x="80" y="730" font-family="Songti SC, STSong, serif" font-size="22" fill="#9aa0aa">能看什么</text>
+  <text x="80" y="778" font-family="Songti SC, STSong, serif" font-size="24" fill="#c8ccd4">· 今日：日柱与建除</text>
+  <text x="80" y="822" font-family="Songti SC, STSong, serif" font-size="24" fill="#c8ccd4">· 问事：只断一件事</text>
+  <text x="80" y="866" font-family="Songti SC, STSong, serif" font-size="24" fill="#c8ccd4">· 生辰：公历排四柱</text>
+  <text x="80" y="910" font-family="Songti SC, STSong, serif" font-size="24" fill="#c8ccd4">· 铜钱：六爻在本地摇成</text>
+  <text x="80" y="1000" font-family="Songti SC, STSong, serif" font-size="22" fill="#7c8088">娱乐参考，不是宿命。</text>
+  <text x="80" y="1088" font-family="Songti SC, STSong, serif" font-size="18" fill="#7c8088">拂尘 · 筹算 · 开窍 · 玄鉴</text>
+</svg>
