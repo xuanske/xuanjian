@@ -9,6 +9,7 @@ export type Pillar = {
   hidden: string[];
   element: string;
   nayin: string;
+  god?: string;
 };
 
 export type Chart = {
@@ -72,4 +73,5 @@ export type CastInput = {
   name?: string;
   lines?: GuaLine[];
   when?: string;
+  lng?: number;
 };

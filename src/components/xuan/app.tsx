@@ -147,6 +147,7 @@ function Form() {
   const name = useXuan((s) => s.name);
   const birth = useXuan((s) => s.birth);
   const hour = useXuan((s) => s.hour);
+  const lng = useXuan((s) => s.lng);
   const sex = useXuan((s) => s.sex);
   const question = useXuan((s) => s.question);
   const error = useXuan((s) => s.error);
@@ -204,6 +205,17 @@ function Form() {
             </select>
           </Field>
         </div>
+        <Field label="出生地经度（可选）">
+          <input
+            className={inputClass}
+            inputMode="decimal"
+            placeholder="不填按钟表时 · 北京 116.4 乌鲁木齐 87.6"
+            value={lng}
+            maxLength={8}
+            onChange={(e) => setProfile({ lng: e.target.value })}
+          />
+        </Field>
+        <p className="text-xs text-muted-foreground">填东经则按时柱用真太阳时。1986–1991 年夏令时未自动回拨，请自行减一小时。</p>
       </div>
       {error ? <p className="mt-4 text-sm text-destructive">{error}</p> : null}
       <Button className="mt-auto h-12 rounded-xl" onClick={() => void cast()}>
@@ -269,7 +281,8 @@ function Pillars({ chart }: { chart: Chart }) {
           <div className="text-xs text-muted-foreground">{label}</div>
           <div className="mt-1 font-display text-xl leading-none">{p.stem}</div>
           <div className="mt-1 font-display text-xl leading-none">{p.branch}</div>
-          <div className="mt-2 text-xs text-muted-foreground">{p.nayin ?? p.element}</div>
+          <div className="mt-2 text-xs text-muted-foreground">{p.god ?? p.element}</div>
+          <div className="mt-0.5 text-[10px] text-muted-foreground/80">{p.nayin}</div>
         </div>
       ))}
     </div>

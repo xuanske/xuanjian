@@ -12,6 +12,7 @@ const Input = z.object({
   name: z.string().max(20).optional(),
   lines: z.array(z.object({ yang: z.boolean(), changing: z.boolean() })).length(6).optional(),
   when: z.string().max(16).optional(),
+  lng: z.number().min(70).max(150).optional(),
 });
 
 function extractJson(text: string): {
@@ -68,11 +69,11 @@ function userPrompt(input: CastInput): {
   const name = input.name?.trim() || "未署";
   const hour = input.hour ?? 12;
   const natal = input.birth ? parseBirth(input.birth) : null;
-  const natalChart = natal ? buildChart(natal, hour, sex) : undefined;
+  const natalChart = natal ? buildChart(natal, hour, sex, input.lng) : undefined;
   const whenLabel = input.when || now.toISOString().slice(0, 10);
 
   if (input.kind === "today") {
-    const chart = buildChart(now, hour, sex);
+    const chart = buildChart(now, hour, sex, input.lng);
     const jc = jianchuOf(chart);
     return {
       chart,

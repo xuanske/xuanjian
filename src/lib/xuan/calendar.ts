@@ -129,6 +129,39 @@ export function nayinOf(stem: string, branch: string): string {
   return NAYIN[Math.floor(cycleIndex(stem, branch) / 2)] ?? "海中金";
 }
 
+const GEN: Record<string, string> = { 木: "火", 火: "土", 土: "金", 金: "水", 水: "木" };
+const KE: Record<string, string> = { 木: "土", 土: "水", 水: "火", 火: "金", 金: "木" };
+
+export function godOf(dayStem: string, stem: string): string {
+  const d = STEMS.indexOf(dayStem as (typeof STEMS)[number]);
+  const s = STEMS.indexOf(stem as (typeof STEMS)[number]);
+  if (d < 0 || s < 0) return "";
+  const same = d % 2 === s % 2;
+  const de = STEM_EL[d]!;
+  const se = STEM_EL[s]!;
+  if (se === de) return same ? "比肩" : "劫财";
+  if (GEN[de] === se) return same ? "食神" : "伤官";
+  if (KE[de] === se) return same ? "偏财" : "正财";
+  if (KE[se] === de) return same ? "七杀" : "正官";
+  if (GEN[se] === de) return same ? "偏印" : "正印";
+  return "";
+}
+
+/** Spencer 均时差，单位分钟。 */
+export function equationOfTimeMinutes(date: Date): number {
+  const y = date.getFullYear();
+  const n = Math.floor((Date.UTC(y, date.getMonth(), date.getDate()) - Date.UTC(y, 0, 0)) / 86400000);
+  const B = (2 * Math.PI * (n - 81)) / 364;
+  return 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
+}
+
+/** 相对东八区（120°E）的真太阳时偏移（小时，可小数）。不填经度则 0。 */
+export function trueSolarShiftHours(date: Date, lng?: number): number {
+  if (lng == null || !Number.isFinite(lng)) return 0;
+  return (4 * (lng - 120) + equationOfTimeMinutes(date)) / 60;
+}
+
+
 function pillar(stemIndex: number, branchIndex: number): Pillar {
   const stem = STEMS[((stemIndex % 10) + 10) % 10]!;
   const branch = BRANCHES[((branchIndex % 12) + 12) % 12]!;
@@ -141,7 +174,16 @@ function pillar(stemIndex: number, branchIndex: number): Pillar {
   };
 }
 
-export function buildChart(date: Date, hour: number, sex: Sex = "male"): Chart {
+export function buildChart(date: Date, hour: number, sex: Sex = "male", lng?: number): Chart {
+  const shift = trueSolarShiftHours(date, lng);
+  let absHour = hour + shift;
+  const dayDelta = Math.floor(absHour / 24);
+  absHour = ((absHour % 24) + 24) % 24;
+  if (dayDelta !== 0) {
+    date = new Date(date.getFullYear(), date.getMonth(), date.getDate() + dayDelta);
+  }
+  hour = absHour;
+
   const solarYear = lichunYear(date);
   const yearIdx = ((solarYear - 4) % 60 + 60) % 60;
   const year = pairOf(yearIdx);
@@ -169,6 +211,12 @@ export function buildChart(date: Date, hour: number, sex: Sex = "male"): Chart {
       if (el) counts[el] = (counts[el] ?? 0) + 1;
     }
   }
+
+  const dayMaster = dayP.stem;
+  yearP.god = godOf(dayMaster, yearP.stem);
+  monthP.god = godOf(dayMaster, monthP.stem);
+  dayP.god = "日主";
+  hourP.god = godOf(dayMaster, hourP.stem);
 
   const who = sex === "female" ? "坤造" : "乾造";
   const label = `${who} ${yearP.stem}${yearP.branch} ${monthP.stem}${monthP.branch} ${dayP.stem}${dayP.branch} ${hourP.stem}${hourP.branch}`;

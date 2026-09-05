@@ -10,6 +10,7 @@ type Persist = {
   name: string;
   birth: string;
   hour: number;
+  lng: string;
   sex: Sex;
   history: Reading[];
   castsToday: { stamp: string; n: number };
@@ -28,7 +29,7 @@ type State = Persist & {
   persist: () => void;
   go: (screen: Screen) => void;
   setKind: (kind: Kind) => void;
-  setProfile: (patch: Partial<Pick<Persist, "name" | "birth" | "hour" | "sex">>) => void;
+  setProfile: (patch: Partial<Pick<Persist, "name" | "birth" | "hour" | "lng" | "sex">>) => void;
   setQuestion: (question: string) => void;
   begin: (kind: Kind) => void;
   cast: () => Promise<void>;
@@ -43,6 +44,7 @@ const empty = (): Persist => ({
   name: "",
   birth: "",
   hour: 12,
+  lng: "",
   sex: "male",
   history: [],
   castsToday: { stamp: todayStamp(), n: 0 },
@@ -129,10 +131,12 @@ export const useXuan = create<State>((set, get) => ({
       question: s.question.trim() || undefined,
       birth: s.birth || undefined,
       hour: s.hour,
+      lng: s.lng,
       sex: s.sex,
       name: s.name.trim() || undefined,
       lines: gua?.lines,
       when: stamp,
+      lng: s.lng.trim() ? Number(s.lng) : undefined,
     };
     try {
       const res = await castReading({ data: payload });

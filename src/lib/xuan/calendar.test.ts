@@ -11,6 +11,8 @@ import {
   lichunYear,
   nayinOf,
   pairOf,
+  godOf,
+  trueSolarShiftHours,
 } from "./calendar.ts";
 
 describe("玄鉴命盘", () => {
@@ -100,3 +102,24 @@ describe("玄鉴命盘", () => {
     assert.equal(julianDay(2000, 1, 1), 2451545);
   });
 });
+
+  it("十神：甲见乙劫财、见丙食神、见己正财、见庚七杀", () => {
+    assert.equal(godOf("甲", "甲"), "比肩");
+    assert.equal(godOf("甲", "乙"), "劫财");
+    assert.equal(godOf("甲", "丙"), "食神");
+    assert.equal(godOf("甲", "己"), "正财");
+    assert.equal(godOf("甲", "庚"), "七杀");
+    assert.equal(godOf("乙", "甲"), "劫财");
+    assert.equal(godOf("乙", "丁"), "食神");
+  });
+
+  it("真太阳时：乌鲁木齐经度比北京钟表时明显偏西", () => {
+    const d = new Date(2024, 5, 15);
+    const west = trueSolarShiftHours(d, 87.6);
+    const east = trueSolarShiftHours(d, 121.5);
+    assert.ok(west < -1.5, String(west));
+    assert.ok(east > -0.2, String(east));
+    const clock = buildChart(d, 12, "male");
+    const solar = buildChart(d, 12, "male", 87.6);
+    assert.ok(clock.hour.stem + clock.hour.branch !== solar.hour.stem + solar.hour.branch);
+  });
