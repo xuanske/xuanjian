@@ -6,6 +6,19 @@ AI 命理参考：今日黄历、问事、生辰四柱、铜钱卦。
 
 先在本地排盘、摇卦，再请辞章。界面写明：**娱乐参考，不是宿命。** 不保证发财婚姻，也不编精确应期。
 
+## 国内下载（GitHub 打不开时）
+
+源码压缩包，两个镜像任选，打不开就换另一个：
+
+- [ghproxy 下载 v0.1.0.zip](https://ghproxy.net/https://github.com/xuanske/xuanjian/archive/refs/tags/v0.1.0.zip)
+- [gh.llkk.cc 下载 v0.1.0.zip](https://gh.llkk.cc/https://github.com/xuanske/xuanjian/archive/refs/tags/v0.1.0.zip)
+
+封面图：
+
+- [jsDelivr](https://cdn.jsdelivr.net/gh/xuanske/xuanjian@main/public/og.jpg)
+
+浏览代码可以把 `github.com` 换成 `kkgithub.com`（镜像有时会晚同步）。
+
 ## 能做什么
 
 - **今日**：按当地日柱与建除写一页运势；填了生辰会对照本命
