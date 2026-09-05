@@ -131,7 +131,6 @@ export const useXuan = create<State>((set, get) => ({
       question: s.question.trim() || undefined,
       birth: s.birth || undefined,
       hour: s.hour,
-      lng: s.lng,
       sex: s.sex,
       name: s.name.trim() || undefined,
       lines: gua?.lines,
