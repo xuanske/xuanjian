@@ -135,6 +135,49 @@ const GOD_NOTE: Record<string, string> = {
   日主: "命理以日为主。日干为己，余柱皆宾。先认日主强弱，再言用神。",
 };
 
+/** 《滴天髓》十干。任铁樵注本通行文，作者旧题刘基。 */
+const DITIAN: Record<string, string> = {
+  甲: "甲木参天，脱胎要火。春不容金，秋不容土。火炽乘龙，水宕骑虎。地润天和，植立千古。",
+  乙: "乙木虽柔，割之可断。圆而且扁，静中带酸。",
+  丙: "丙火猛烈，欺霜侮雪。能煅庚金，逢辛反怯。土众成慈，水猖显节。虎马犬乡，甲木可合。",
+  丁: "丁火柔中，内性昭融。抱乙而孝，合壬而忠。旺而不烈，衰而不穷。如有嫡母，可秋可冬。",
+  戊: "戊土固重，既中且正。静翕动辟，万物司命。水润物生，火燥物病。若在艮坤，怕冲宜静。",
+  己: "己土卑湿，中正蓄藏。不愁木盛，不畏水狂。火少火晦，金多金光。若要物旺，宜助宜帮。",
+  庚: "庚金带煞，刚健为最。得水而清，得火而锐。土润则生，土干则脆。能赢甲兄，输于乙妹。",
+  辛: "辛金软弱，温润而清。畏土之叠，乐水之盈。能扶社稷，能救生灵。热则喜母，寒则喜丁。",
+  壬: "壬水通河，能泄金气。刚中之德，周流不滞。通根透癸，冲天奔地。化则有情，从则相济。",
+  癸: "癸水至弱，达于天津。得龙而运，功化斯神。不愁火土，不论庚辛。合戊见火，化象斯真。",
+};
+
+/** 《穷通宝鉴》五行总论，与《三命通会》论木论火同源。 */
+const QIONG: Record<string, string> = {
+  木: "木性腾上而无所止。木赖水生，少则滋润，多则漂流。生木得火而秀，死木得金而造。",
+  火: "火性炎上。火无木则灭，金无火不烈。水众则灭，土众则晦。",
+  土: "土无正位，旺于四季。土得火暖而生物，水多则泥。木疏则活，金多则弱。",
+  金: "金性沉潜。金无火不烈，金寒水冷则沉。土重金埋，木盛金缺。",
+  水: "水性就下。水无金则乏源，火多则沸。土多则塞，木多则泄。",
+};
+
+function pickDitian(chart: Chart): Passage {
+  const verse = DITIAN[chart.dayMaster] ?? DITIAN.甲!;
+  return {
+    source: "滴天髓",
+    heading: "滴天髓",
+    verse,
+    note: `日主${chart.dayMaster}。只取日干象，不向下指定一年祸福。`,
+  };
+}
+
+function pickQiong(chart: Chart): Passage {
+  const verse = QIONG[chart.dayElement] ?? QIONG.木!;
+  return {
+    source: "穷通宝鉴",
+    heading: "穷通宝鉴",
+    verse,
+    note: `日主属${chart.dayElement}。调候总论，须与月令合看。`,
+  };
+}
+
 function seasonOf(branch: string): "春" | "夏" | "秋" | "冬" {
   return SEASON[branch] ?? "春";
 }
@@ -213,14 +256,18 @@ export function localReading(kind: Kind, extra: { chart?: Chart; gua?: Gua; ques
 > {
   const passages: Passage[] = [];
   if (extra.chart) {
-    passages.push(pickStemVerse(extra.chart), pickNayin(extra.chart), pickGod(extra.chart));
-    const jc = jianchuOf(extra.chart);
-    passages.push({
-      source: "协纪辨方",
-      heading: "建除",
-      verse: `${jc.name}日，宜${jc.yi}，忌${jc.ji}。`,
-      note: "建除只论当日宜忌，与八字用神不是同一套。",
-    });
+    passages.push(pickDitian(extra.chart), pickStemVerse(extra.chart), pickQiong(extra.chart), pickGod(extra.chart));
+    if (kind === "today") {
+      const jc = jianchuOf(extra.chart);
+      passages.push({
+        source: "协纪辨方",
+        heading: "建除",
+        verse: `${jc.name}日，宜${jc.yi}，忌${jc.ji}。`,
+        note: "建除只论当日宜忌，与八字用神不是同一套。",
+      });
+    } else {
+      passages.push(pickNayin(extra.chart));
+    }
   }
   if (extra.gua) passages.unshift(pickGua(extra.gua));
   if (!passages.length) {
@@ -235,6 +282,6 @@ export function localReading(kind: Kind, extra: { chart?: Chart; gua?: Gua; ques
   const prose = modernize(passages, kind, extra.question);
   return {
     ...prose,
-    caution: "引文出《三命通会》《周易》。今译便于阅读，不是算准，更不是宿命。",
+    caution: "引文出《三命通会》《滴天髓》《穷通宝鉴》《周易》。今译便于阅读，不是算准，更不是宿命。",
   };
 }

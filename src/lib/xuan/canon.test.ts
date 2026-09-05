@@ -7,8 +7,9 @@ describe("典籍辞章", () => {
   it("甲日寅月引三命通会春诀，离线可成文", () => {
     const chart = buildChart(new Date(1984, 1, 10), 12);
     const reading = localReading("bazi", { chart });
-    assert.match(reading.sections[0]?.body ?? "", /三命通会/);
-    assert.match(reading.sections.map((s) => s.body).join(""), /三命通会|纳音|十神|建除/);
+    const body = reading.sections.map((s) => s.body).join("\n");
+    assert.match(body, /滴天髓/);
+    assert.match(body, /三命通会|穷通宝鉴/);
     assert.match(reading.caution, /不是宿命/);
   });
 
