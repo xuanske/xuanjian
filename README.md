@@ -4,6 +4,12 @@ AI 命理参考：今日黄历、问事、生辰四柱、铜钱卦。**娱乐参
 
 ![玄鉴封面](public/og.jpg)
 
+## 直接打开（国内）
+
+浏览器打开：[https://cdn.jsdelivr.net/gh/xuanske/xuanjian@main/docs/index.html](https://cdn.jsdelivr.net/gh/xuanske/xuanjian@main/docs/index.html)
+
+打不开就到 Releases 下载 zip，解压后用 Chrome 打开 `index.html`。断网也能排盘，辞章引《三命通会》《周易》。
+
 ## 怎么用
 
 需要 [Node.js 20](https://nodejs.org/) 或以上。
@@ -15,7 +21,7 @@ npm install
 npm run dev
 ```
 
-终端会给出本地地址，用浏览器打开。不配密钥也能排盘、看黄历、摇铜钱。
+终端会给出本地地址，用浏览器打开。不配密钥也能排盘、看黄历、摇铜钱，并引《三命通会》。
 
 可选：复制 `.env.example` 为 `.env`，填入 `XAI_API_KEY`（[xAI](https://console.x.ai/)），辞章才由模型撰写。不填则只留盘面，不编造。
 

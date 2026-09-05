@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { jianchuOf } from "./almanac";
 import { buildChart, buildGua, chartSummary, guaFromLines, lichunYear, parseBirth } from "./calendar";
+import { localReading } from "./canon";
 import type { CastInput, Gua, Kind, Reading, Section } from "./types";
 
 const Input = z.object({
@@ -140,7 +141,7 @@ export async function runCastReading(
     : built.gua
     ? `${built.gua.name}：${built.gua.info}`
     : "";
-  let prose = fallbackReading(data.kind, extra);
+  let prose = localReading(data.kind, { chart: built.chart, gua: built.gua, question: data.question });
 
   if (apiKey) {
     try {
@@ -148,17 +149,18 @@ export async function runCastReading(
     if (!text) text = await askGrok(apiKey, built.text);
     const parsed = text ? extractJson(text) : null;
     if (parsed?.verdict) {
+      const extraSections = Array.isArray(parsed.sections)
+        ? parsed.sections.slice(0, 2).map((s) => ({
+            heading: String(s.heading ?? "今译").slice(0, 16),
+            body: String(s.body ?? "").slice(0, 400),
+          }))
+        : [{ heading: "今译", body: String(parsed.verdict).slice(0, 200) }];
       prose = {
-      title: String(parsed.title || "鉴").slice(0, 20),
-      verdict: String(parsed.verdict).slice(0, 80),
-      sections: Array.isArray(parsed.sections)
-        ? parsed.sections.slice(0, 4).map((s) => ({
-          heading: String(s.heading ?? "").slice(0, 16),
-          body: String(s.body ?? "").slice(0, 400),
-        }))
-        : prose.sections,
-      advice: Array.isArray(parsed.advice) ? parsed.advice.map((a) => String(a).slice(0, 80)).slice(0, 4) : prose.advice,
-      caution: String(parsed.caution || prose.caution).slice(0, 80),
+        title: prose.title,
+        verdict: prose.verdict,
+        sections: [...prose.sections, ...extraSections].slice(0, 6),
+        advice: prose.advice,
+        caution: prose.caution,
       };
     }
     } catch {
@@ -184,11 +186,15 @@ export async function runCastReading(
 }
 
 export async function castReading(arg: { data: unknown }) {
-  const res = await fetch("/api/cast", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(arg.data),
-  });
-  if (!res.ok) throw new Error("cast failed");
-  return (await res.json()) as { ok: true; reading: Reading } | { ok: false; error: string };
+  try {
+    const res = await fetch("/api/cast", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(arg.data),
+    });
+    if (res.ok) return (await res.json()) as { ok: true; reading: Reading } | { ok: false; error: string };
+  } catch {
+    /* file:// or 断网：走本地典籍 */
+  }
+  return runCastReading(arg.data);
 }

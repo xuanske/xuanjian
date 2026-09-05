@@ -74,7 +74,7 @@ function Home() {
       <div className="mt-6 xuan-rise">
         <Mirror />
         <h1 className="mt-4 text-center font-display text-5xl tracking-tight">玄鉴</h1>
-        <p className="mt-2 text-center text-sm text-muted-foreground">先排盘，再请辞。娱乐参考，不是宿命。</p>
+        <p className="mt-2 text-center text-sm text-muted-foreground">先排盘，再引《三命通会》。离线也能鉴。娱乐参考，不是宿命。</p>
       </div>
       <button
         type="button"
