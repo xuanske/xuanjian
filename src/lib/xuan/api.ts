@@ -1,4 +1,3 @@
-import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { jianchuOf } from "./almanac";
 import { buildChart, buildGua, chartSummary, guaFromLines, lichunYear, parseBirth } from "./calendar";
@@ -129,55 +128,66 @@ async function askGrok(apiKey: string, user: string): Promise<string | null> {
   return body.choices?.[0]?.message?.content ?? null;
 }
 
-export const castReading = createServerFn({ method: "POST" })
-  .validator((input: unknown) => Input.parse(input))
-  .handler(async ({ data }): Promise<{ ok: true; reading: Reading } | { ok: false; error: string }> => {
-    const built = userPrompt(data);
-    const apiKey = process.env.XAI_API_KEY;
-    const extra = built.chart
-      ? chartSummary(built.chart)
-      : built.gua
-        ? `${built.gua.name}：${built.gua.info}`
-        : "";
-    let prose = fallbackReading(data.kind, extra);
+export async function runCastReading(
+  input: unknown,
+): Promise<{ ok: true; reading: Reading } | { ok: false; error: string }> {
+  const data = Input.parse(input);
+  const built = userPrompt(data);
+  const apiKey = process.env.XAI_API_KEY;
+  const extra = built.chart
+    ? chartSummary(built.chart)
+    : built.gua
+    ? `${built.gua.name}：${built.gua.info}`
+    : "";
+  let prose = fallbackReading(data.kind, extra);
 
-    if (apiKey) {
-      try {
-        let text = await askGrok(apiKey, built.text);
-        if (!text) text = await askGrok(apiKey, built.text);
-        const parsed = text ? extractJson(text) : null;
-        if (parsed?.verdict) {
-          prose = {
-            title: String(parsed.title || "鉴").slice(0, 20),
-            verdict: String(parsed.verdict).slice(0, 80),
-            sections: Array.isArray(parsed.sections)
-              ? parsed.sections.slice(0, 4).map((s) => ({
-                  heading: String(s.heading ?? "").slice(0, 16),
-                  body: String(s.body ?? "").slice(0, 400),
-                }))
-              : prose.sections,
-            advice: Array.isArray(parsed.advice) ? parsed.advice.map((a) => String(a).slice(0, 80)).slice(0, 4) : prose.advice,
-            caution: String(parsed.caution || prose.caution).slice(0, 80),
-          };
-        }
-      } catch {
-        /* keep fallback */
-      }
+  if (apiKey) {
+    try {
+    let text = await askGrok(apiKey, built.text);
+    if (!text) text = await askGrok(apiKey, built.text);
+    const parsed = text ? extractJson(text) : null;
+    if (parsed?.verdict) {
+      prose = {
+      title: String(parsed.title || "鉴").slice(0, 20),
+      verdict: String(parsed.verdict).slice(0, 80),
+      sections: Array.isArray(parsed.sections)
+        ? parsed.sections.slice(0, 4).map((s) => ({
+          heading: String(s.heading ?? "").slice(0, 16),
+          body: String(s.body ?? "").slice(0, 400),
+        }))
+        : prose.sections,
+      advice: Array.isArray(parsed.advice) ? parsed.advice.map((a) => String(a).slice(0, 80)).slice(0, 4) : prose.advice,
+      caution: String(parsed.caution || prose.caution).slice(0, 80),
+      };
     }
+    } catch {
+    /* keep fallback */
+    }
+  }
 
-    const reading: Reading = {
-      id: `r${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
-      at: Date.now(),
-      kind: data.kind,
-      title: prose.title,
-      verdict: prose.verdict,
-      sections: prose.sections,
-      advice: prose.advice,
-      caution: prose.caution,
-      chart: built.chart,
-      gua: built.gua,
-      jianchu: built.chart ? jianchuOf(built.chart) : undefined,
-      question: data.question?.trim() || undefined,
-    };
-    return { ok: true, reading };
+  const reading: Reading = {
+    id: `r${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
+    at: Date.now(),
+    kind: data.kind,
+    title: prose.title,
+    verdict: prose.verdict,
+    sections: prose.sections,
+    advice: prose.advice,
+    caution: prose.caution,
+    chart: built.chart,
+    gua: built.gua,
+    jianchu: built.chart ? jianchuOf(built.chart) : undefined,
+    question: data.question?.trim() || undefined,
+  };
+  return { ok: true, reading };
+}
+
+export async function castReading(arg: { data: unknown }) {
+  const res = await fetch("/api/cast", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(arg.data),
   });
+  if (!res.ok) throw new Error("cast failed");
+  return (await res.json()) as { ok: true; reading: Reading } | { ok: false; error: string };
+}

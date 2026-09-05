@@ -1,5 +1,29 @@
 # 玄鉴
 
+AI 命理参考：今日黄历、问事、生辰四柱、铜钱卦。**娱乐参考，不是宿命。**
+
+![玄鉴封面](public/og.jpg)
+
+## 怎么用
+
+需要 [Node.js 20](https://nodejs.org/) 或以上。
+
+```bash
+git clone https://github.com/xuanske/xuanjian.git
+cd xuanjian
+npm install
+npm run dev
+```
+
+终端会给出本地地址，用浏览器打开。不配密钥也能排盘、看黄历、摇铜钱。
+
+可选：复制 `.env.example` 为 `.env`，填入 `XAI_API_KEY`（[xAI](https://console.x.ai/)），辞章才由模型撰写。不填则只留盘面，不编造。
+
+国内克隆 / 下载：
+
+- [源码 zip（镜像）](https://ghproxy.net/https://github.com/xuanske/xuanjian/archive/refs/heads/main.zip)
+- `git clone https://ghproxy.net/https://github.com/xuanske/xuanjian.git`
+
 ![玄鉴封面：暗银圆镜与铜钱](public/og.jpg)
 
 AI 命理参考：今日黄历、问事、生辰四柱、铜钱卦。
